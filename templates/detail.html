@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row glass-card p-4 shadow-lg border-0">
+        <div class="col-md-5 text-center border-end border-secondary p-3">
+            <img src="{{ main.image_url or 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500' }}" class="img-fluid rounded mb-3 shadow" style="max-height: 240px;">
+            <h3 class="fw-bold text-white">{{ main.name }}</h3>
+            <span class="badge bg-dark border border-secondary mb-3">Mã chuẩn hóa: {{ main.normalized_name }}</span>
+            <hr class="border-secondary">
+            <h5 class="fw-bold text-start text-white mb-3"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử thay đổi giá thiết bị</h5>
+            <canvas id="chartHistory" width="100%" height="70"></canvas>
+        </div>
+
+        <div class="col-md-7 ps-4">
+            <h4 class="mb-4 fw-bold text-white border-bottom border-secondary pb-2"><i class="fa-solid fa-shop"></i> DANH SÁCH BÊN PHÂN PHỐI GIÁ</h4>
+            <div class="d-flex flex-column gap-3">
+                {% for offer in offers %}
+                <div class="d-flex justify-content-between align-items-center p-3 border border-secondary rounded-3" style="background: rgba(14, 20, 56, 0.8);">
+                    <div>
+                        <span class="badge bg-primary px-3 py-2 mb-2">{{ offer.provider_name }}</span>
+                        <div class="text-light-gray small">{{ offer.name }}</div>
+                        <small class="text-warning">★: {{ offer.rating }} sao</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="d-block fw-bold fs-4" style="color: #0B5CFF;">{{"{:,.0f}".format(offer.price)}} Đ</span>
+                        <a href="{{ offer.url }}" target="_blank" class="btn btn-sm btn-light mt-1 px-3">ĐẾN NƠI BÁN</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('chartHistory').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|tojson }},
+            datasets: [{
+                label: 'Giá biến động (VND)',
+                data: {{ prices|tojson }},
+                borderColor: '#0B5CFF',
+                backgroundColor: 'rgba(11, 92, 255, 0.1)',
+                borderWidth: 2,
+                fill: true
+            }]
+        }
+    });
+</script>
+{% endblock %}
